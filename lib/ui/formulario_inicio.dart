@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:gestion_empleados/ui/empleados/empleados_page.dart';
+import 'package:http/http.dart' as http;
 
 class FormInicio extends StatefulWidget {
   @override
@@ -8,10 +11,45 @@ class FormInicio extends StatefulWidget {
 
 class _FormInicioState extends State<FormInicio> {
   final _formKey = GlobalKey<FormState>();
+  final passController = TextEditingController();
+  final mailController = TextEditingController();
+  bool loading = false;
 
-  void handleNavigateTap(BuildContext context) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (_) => EmpleadosPage()));
+  void handleIniciarSesion(BuildContext context) async {
+    Map bodyData = {
+      'correo': '${mailController.text}',
+      'contraseña': '${passController.text}'
+    };
+    var body = json.encode(bodyData);
+
+    setState(() {
+      loading = true;
+    });
+
+    final response = await http.post(
+        'https://gestion-empleados.herokuapp.com/usuarios/login',
+        headers: {"Content-Type": "application/json"},
+        body: body);
+    final dataJson = jsonDecode(response.body);
+    print(dataJson);
+    setState(() {
+      loading = false;
+    });
+    if (dataJson['data'] == null) {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(dataJson['msg']),
+        backgroundColor: ThemeData.light().errorColor,
+      ));
+    } else {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (_) => EmpleadosPage()));
+    }
+  }
+
+  void dispose() {
+    passController.dispose();
+    mailController.dispose();
+    super.dispose();
   }
 
   @override
@@ -24,6 +62,10 @@ class _FormInicioState extends State<FormInicio> {
               padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 50),
               child: Column(
                 children: <Widget>[
+                  if (loading)
+                    Center(
+                      child: CircularProgressIndicator(),
+                    ),
                   TextFormField(
                     decoration: InputDecoration(
                         labelText: 'Ingrese su correo',
@@ -35,6 +77,7 @@ class _FormInicioState extends State<FormInicio> {
                         return 'Por favor ingrese su correo';
                       }
                     },
+                    controller: mailController,
                   ),
                   TextFormField(
                     decoration: InputDecoration(
@@ -47,6 +90,8 @@ class _FormInicioState extends State<FormInicio> {
                         return 'Por favor ingrese su correo';
                       }
                     },
+                    controller: passController,
+                    obscureText: true,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -56,7 +101,7 @@ class _FormInicioState extends State<FormInicio> {
                         // el formulario no es válido.
                         if (_formKey.currentState.validate()) {
                           // Si el formulario es válido, queremos mostrar un Snackbar
-                          handleNavigateTap(context);
+                          handleIniciarSesion(context);
                         }
                       },
                       child: Text('Enviar'),
