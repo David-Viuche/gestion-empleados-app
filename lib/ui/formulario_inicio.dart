@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:gestion_empleados/data/repository/storage_impl.dart';
 import 'package:gestion_empleados/ui/empleados/empleados_page.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,6 +14,7 @@ class _FormInicioState extends State<FormInicio> {
   final _formKey = GlobalKey<FormState>();
   final passController = TextEditingController();
   final mailController = TextEditingController();
+  final storage = StorageImpl();
   bool loading = false;
 
   void handleIniciarSesion(BuildContext context) async {
@@ -31,7 +33,6 @@ class _FormInicioState extends State<FormInicio> {
         headers: {"Content-Type": "application/json"},
         body: body);
     final dataJson = jsonDecode(response.body);
-    print(dataJson);
     setState(() {
       loading = false;
     });
@@ -41,6 +42,7 @@ class _FormInicioState extends State<FormInicio> {
         backgroundColor: ThemeData.light().errorColor,
       ));
     } else {
+      storage.saveToken(dataJson['data']['token']);
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (_) => EmpleadosPage()));
     }
