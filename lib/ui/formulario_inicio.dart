@@ -56,63 +56,60 @@ class _FormInicioState extends State<FormInicio> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 50),
-              child: Column(
-                children: <Widget>[
-                  if (loading)
-                    Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  TextFormField(
-                    decoration: InputDecoration(
-                        labelText: 'Ingrese su correo',
-                        labelStyle: TextStyle(fontSize: 18),
-                        hintStyle: TextStyle(fontSize: 18)),
-                    // ignore: missing_return
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Por favor ingrese su correo';
-                      }
-                    },
-                    controller: mailController,
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(
-                        labelText: 'Ingrese su contraseña',
-                        labelStyle: TextStyle(fontSize: 18),
-                        hintStyle: TextStyle(fontSize: 18)),
-                    // ignore: missing_return
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Por favor ingrese su correo';
-                      }
-                    },
-                    controller: passController,
-                    obscureText: true,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: RaisedButton(
-                      onPressed: () {
-                        // devolverá true si el formulario es válido, o falso si
-                        // el formulario no es válido.
-                        if (_formKey.currentState.validate()) {
-                          // Si el formulario es válido, queremos mostrar un Snackbar
-                          handleIniciarSesion(context);
-                        }
-                      },
-                      child: Text('Enviar'),
-                    ),
-                  ),
-                ],
+    return ListView(
+      shrinkWrap: true,
+      padding: const EdgeInsets.all(20.0),
+      children: [
+        Form(
+          key: _formKey,
+          child: Column(
+            children: <Widget>[
+              if (loading)
+                Center(
+                  child: CircularProgressIndicator(),
+                ),
+              TextFormField(
+                decoration: InputDecoration(
+                    labelText: 'Ingrese su correo',
+                    labelStyle: TextStyle(fontSize: 18),
+                    hintStyle: TextStyle(fontSize: 18)),
+                // ignore: missing_return
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Por favor ingrese su correo';
+                  }
+                },
+                controller: mailController,
               ),
-            ),
-          ],
-        ));
+              TextFormField(
+                decoration: InputDecoration(
+                    labelText: 'Ingrese su contraseña',
+                    labelStyle: TextStyle(fontSize: 18),
+                    hintStyle: TextStyle(fontSize: 18)),
+                // ignore: missing_return
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Por favor ingrese su correo';
+                  }
+                },
+                controller: passController,
+                obscureText: true,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: RaisedButton(
+                  onPressed: () {
+                    if (_formKey.currentState.validate()) {
+                      handleIniciarSesion(context);
+                    }
+                  },
+                  child: Text('Enviar'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }

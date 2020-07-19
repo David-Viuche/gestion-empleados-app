@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gestion_empleados/data/repository/storage_impl.dart';
 import 'package:gestion_empleados/models/empleado.dart';
+import 'package:gestion_empleados/ui/empleados/crear_empleado_page.dart';
+import 'package:gestion_empleados/ui/empleados/ver_empleado_page.dart';
 import 'package:http/http.dart' as http;
 
 class EmpleadosPage extends StatefulWidget {
@@ -16,12 +18,18 @@ class _EmpleadosPageState extends State<EmpleadosPage> {
   int contadorPeticion = 0;
   List<Empleado> empleados = [];
 
-  void handleNuevoEmpleadoTap(BuildContext context) async {
-    print('nuevo empleado');
-  }
-
   @override
   Widget build(BuildContext context) {
+    void handleNuevoEmpleadoTap(BuildContext context) {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (_) => CrearEmpleadoPage()));
+    }
+
+    void cambioActualizarEmpleado(BuildContext context, Empleado empleado) {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (_) => VerEmpleadoPage(empleado)));
+    }
+
     void peticionEmpleados() async {
       setState(() {
         loading = true;
@@ -70,9 +78,6 @@ class _EmpleadosPageState extends State<EmpleadosPage> {
             Center(
               child: CircularProgressIndicator(),
             ),
-          // SizedBox(
-          //   height: 50,
-          // ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 39, vertical: 20),
@@ -87,7 +92,9 @@ class _EmpleadosPageState extends State<EmpleadosPage> {
                           Icons.add_box,
                           color: ThemeData.light().iconTheme.color,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          cambioActualizarEmpleado(context, empleados[index]);
+                        },
                       ),
                     );
                   }),
